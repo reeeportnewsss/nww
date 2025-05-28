@@ -52,10 +52,10 @@ def fetch_news_for_company(company_name, symbol):
             for entry in feed.entries:
                 titles.append(entry.title)
                 # Print news to console
-                print(f"Title: {entry.title}")
-                print(f"Link: {entry.link}")
-                print(f"Published: {entry.published}")
-                print("-" * 50)
+                #print(f"Title: {entry.title}")
+                #print(f"Link: {entry.link}")
+               # print(f"Published: {entry.published}")
+               # print("-" * 50)
         else:
             print(f"No news found for {company_name} ({symbol}) in the last 3 hours.")
 
