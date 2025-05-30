@@ -78,7 +78,7 @@ def save_to_file(response_text):
     file_content += f"**Best News Item from File**\n{response_text}\n\n"
 
     # Generate file name with date
-    file_name = f"corporate_news_{today}.txt"
+    file_name = f"corporate_news_1{today}.txt"
     local_file_path = os.path.join(OUTPUT_DIR, file_name)
     remote_file_path = os.path.join(VPS_DEST_DIR, file_name)
 
