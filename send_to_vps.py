@@ -8,11 +8,11 @@ import paramiko
 # ==== CONFIGURATION ====
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 NEWS_FILE = "processed_stock_news.txt"  # Path to news file
-OUTPUT_DIR = os.getenv('OUTPUT_DIR', '/tmp')  # Local temp directory in GitHub Actions
+OUTPUT_DIR = os.getenv('OUTPUT_DIR', '')  # Local temp directory in GitHub Actions
 VPS_HOST = os.getenv('VPS_HOST')  # VPS hostname or IP (e.g., 192.168.1.100)
 VPS_USER = os.getenv('VPS_USER')  # VPS SSH username
 VPS_PASS = os.getenv('VPS_PASS')  # VPS SSH password (or use key-based auth)
-VPS_DEST_DIR = os.getenv('VPS_DEST_DIR', '/home/user/reports')  # Destination directory on VPS
+VPS_DEST_DIR = os.getenv('VPS_DEST_DIR', '/root/reports')  # Destination directory on VPS
 VPS_PORT = int(os.getenv('VPS_PORT', 22))  # SSH port, default 22
 
 # Ensure the local output directory exists
