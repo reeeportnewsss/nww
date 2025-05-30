@@ -24,7 +24,7 @@ jobs:
         pip install -q -U "google-genai>=1.0.0"
         pip install bs4
         pip install feedparser
-        
+        pip install paramiko
 
     - name: Run Groww Digest Analysis Script
       run: python fetch_keyword_stock_news.py
@@ -37,5 +37,10 @@ jobs:
         EMAIL_USER: ${{ secrets.EMAIL_USER }}
         EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
         EMAIL_TO: ${{ secrets.EMAIL_TO }}
-      run: python send_to_gemini_news.py
+        VPS_HOST: ${{ secrets.VPS_HOST }}
+        VPS_USER: ${{ secrets.VPS_USER }}
+        VPS_PASS: ${{ secrets.VPS_PASS }}
+        VPS_DEST_DIR: ${{ secrets.VPS_DEST_DIR }}
+        VPS_PORT: ${{ secrets.VPS_PORT }}
+      run: python send_to_vps.py
      
