@@ -17,7 +17,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Instruction to add at the top of the file
-INSTRUCTION = """Here is a list of news regarding stocks. Analyze all without missing any and find the best and worst news that can move stock prices."""
+INSTRUCTION = """Here is list of news regarding top brokerage research so analyse well and respond me which indian stock willl be affected , only give afected stock in response don't give all by that i will not get overwhelmed by reading large text, and also give response as human easly readable"""
 
 def process_news_file():
     """
