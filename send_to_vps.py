@@ -11,7 +11,7 @@ NEWS_FILE = "processed_stock_news.txt"  # Path to news file
 OUTPUT_DIR = os.getenv('OUTPUT_DIR', '/tmp')  # Local temp directory in GitHub Actions
 
 # === Telegram Bot Config ===
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8150896609:AAHt7tckKzy-MdnmE2vFSfNmVHRS6Q0FELo")
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "1486785506")  # Channel ID or user ID
 
 # Ensure the local output directory exists
