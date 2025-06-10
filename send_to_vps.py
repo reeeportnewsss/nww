@@ -1,19 +1,18 @@
 import os
 import logging
+import requests
 from google import genai
 from google.genai.types import GenerateContentConfig
 from datetime import datetime
-import paramiko
 
 # ==== CONFIGURATION ====
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 NEWS_FILE = "processed_stock_news.txt"  # Path to news file
 OUTPUT_DIR = os.getenv('OUTPUT_DIR', '/tmp')  # Local temp directory in GitHub Actions
-VPS_HOST = os.getenv('VPS_HOST')  # VPS hostname or IP (e.g., 192.168.1.100)
-VPS_USER = os.getenv('VPS_USER')  # VPS SSH username
-VPS_PASS = os.getenv('VPS_PASS')  # VPS SSH password (or use key-based auth)
-VPS_DEST_DIR = os.getenv('VPS_DEST_DIR', '/root/reports')  # Destination directory on VPS
-VPS_PORT = int(os.getenv('VPS_PORT', 22))  # SSH port, default 22
+
+# === Telegram Bot Config ===
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8150896609:AAHt7tckKzy-MdnmE2vFSfNmVHRS6Q0FELo")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "1486785506")  # Channel ID or user ID
 
 # Ensure the local output directory exists
 if not os.path.exists(OUTPUT_DIR):
@@ -61,26 +60,94 @@ def read_news_file():
         logger.error(f"Error reading news file: {e}")
         return f"Error reading news file: {str(e)}"
 
-# Read news file content to use as the prompt
-today = datetime.now().strftime("%Y-%m-%d")
-news_prompt = read_news_file()
-
-def save_to_file(response_text):
+def send_to_telegram(message, chat_id=TELEGRAM_CHAT_ID, bot_token=TELEGRAM_BOT_TOKEN):
     """
-    Save the Gemini response to a .txt file locally and transfer it to the VPS.
+    Send a message to Telegram bot.
+    Args:
+        message (str): Message to send
+        chat_id (str): Telegram chat ID
+        bot_token (str): Telegram bot token
+    Returns:
+        bool: True if message sent successfully, False otherwise.
+    """
+    try:
+        # Telegram API URL
+        url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+        
+        # Message data
+        data = {
+            'chat_id': chat_id,
+            'text': message,
+            'parse_mode': 'Markdown'  # Enable markdown formatting
+        }
+        
+        # Send POST request
+        response = requests.post(url, data=data, timeout=30)
+        
+        if response.status_code == 200:
+            logger.info("Message sent to Telegram successfully")
+            return True
+        else:
+            logger.error(f"Failed to send message to Telegram. Status code: {response.status_code}")
+            logger.error(f"Response: {response.text}")
+            return False
+            
+    except Exception as e:
+        logger.error(f"Error sending message to Telegram: {e}")
+        return False
+
+def send_file_to_telegram(file_path, chat_id=TELEGRAM_CHAT_ID, bot_token=TELEGRAM_BOT_TOKEN):
+    """
+    Send a file to Telegram bot.
+    Args:
+        file_path (str): Path to the file to send
+        chat_id (str): Telegram chat ID
+        bot_token (str): Telegram bot token
+    Returns:
+        bool: True if file sent successfully, False otherwise.
+    """
+    try:
+        # Telegram API URL for sending documents
+        url = f"https://api.telegram.org/bot{bot_token}/sendDocument"
+        
+        # Prepare file and data
+        with open(file_path, 'rb') as file:
+            files = {'document': file}
+            data = {'chat_id': chat_id}
+            
+            # Send POST request
+            response = requests.post(url, files=files, data=data, timeout=30)
+        
+        if response.status_code == 200:
+            logger.info("File sent to Telegram successfully")
+            return True
+        else:
+            logger.error(f"Failed to send file to Telegram. Status code: {response.status_code}")
+            logger.error(f"Response: {response.text}")
+            return False
+            
+    except Exception as e:
+        logger.error(f"Error sending file to Telegram: {e}")
+        return False
+
+def save_and_send_report(response_text):
+    """
+    Save the Gemini response to a .txt file locally and send it to Telegram.
     Args:
         response_text (str): Response from news file analysis or error message.
     Returns:
-        bool: True if file saved and transferred successfully, False otherwise.
+        bool: True if file saved and sent successfully, False otherwise.
     """
+    today = datetime.now().strftime("%Y-%m-%d")
+    
     # Create file content
     file_content = f"=== Indian Corporate News Analysis ===\n\n"
     file_content += f"**Best News Item from File**\n{response_text}\n\n"
+    file_content += f"Generated on: {today}"
 
     # Generate file name with date
-    file_name = f"corporate_news_1{today}.txt"
+    file_name = f"corporate_news_{today}.txt"
     local_file_path = os.path.join(OUTPUT_DIR, file_name)
-    remote_file_path = os.path.join(VPS_DEST_DIR, file_name)
 
     # Save to local file
     try:
@@ -91,44 +158,39 @@ def save_to_file(response_text):
         logger.error(f"Failed to save local file: {e}")
         return False
 
-    # Transfer file to VPS using Paramiko
-    try:
-        # Initialize SSH client
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        
-        # Connect to VPS
-        ssh.connect(VPS_HOST, port=VPS_PORT, username=VPS_USER, password=VPS_PASS)
-        
-        # Initialize SFTP
-        sftp = ssh.open_sftp()
-        
-        # Ensure remote directory exists
-        try:
-            sftp.stat(VPS_DEST_DIR)
-        except FileNotFoundError:
-            sftp.mkdir(VPS_DEST_DIR)
-        
-        # Transfer file
-        sftp.put(local_file_path, remote_file_path)
-        logger.info(f"File transferred to VPS: {remote_file_path}")
-        
-        # Close connections
-        sftp.close()
-        ssh.close()
-        return True
-    except Exception as e:
-        logger.error(f"Failed to transfer file to VPS: {e}")
-        return False
+    # Send both message and file to Telegram
+    success = True
+    
+    # First, send a summary message
+    summary_message = f"📊 *Corporate News Analysis Report*\n\n"
+    summary_message += f"📅 Date: {today}\n\n"
+    summary_message += f"📋 Report generated and ready for review!"
+    
+    if not send_to_telegram(summary_message):
+        success = False
+    
+    # Then send the full report as a file
+    if not send_file_to_telegram(local_file_path):
+        success = False
+        # If file sending fails, try to send the content as a message
+        # (Note: Telegram messages have a 4096 character limit)
+        if len(file_content) <= 4000:
+            logger.info("Attempting to send report content as message...")
+            send_to_telegram(f"```\n{file_content}\n```")
+    
+    return success
+
+# Read news file content to use as the prompt
+news_prompt = read_news_file()
 
 def main():
     """
-    Main function to query Gemini API with news file content and save/transfer response to a file.
+    Main function to query Gemini API with news file content and send response to Telegram.
     """
     if not client:
         error_msg = "Failed to initialize Gemini client. Check API key and network."
         logger.error(error_msg)
-        save_to_file(error_msg)
+        send_to_telegram(f"❌ *Error*\n\n{error_msg}")
         return
 
     try:
@@ -156,16 +218,16 @@ def main():
             else:
                 response_text += f"Answer:\n{part.text}\n\n"
 
-        # Save and transfer file
-        if save_to_file(response_text):
-            logger.info("Corporate news analysis report saved and transferred successfully.")
+        # Save and send report
+        if save_and_send_report(response_text):
+            logger.info("Corporate news analysis report saved and sent to Telegram successfully.")
         else:
-            logger.error("Failed to save or transfer corporate news analysis report.")
+            logger.error("Failed to save or send corporate news analysis report.")
 
     except Exception as e:
         error_msg = f"Error querying Gemini API: {str(e)}"
         logger.error(error_msg)
-        save_to_file(error_msg)
+        send_to_telegram(f"❌ *Error*\n\n{error_msg}")
 
 if __name__ == "__main__":
     main()
