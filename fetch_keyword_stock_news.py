@@ -39,7 +39,7 @@ def fetch_news_for_company(company_name, symbol):
         encoded_company = urllib.parse.quote(company_name)
         encoded_symbol = urllib.parse.quote(symbol)
         # Construct Google News RSS URL with company name, symbol, and 'stock' keyword for last 3 hours
-        rss_url = f"https://news.google.com/rss/search?q={encoded_company}%20when%3A3h&hl=en-IN&gl=IN&ceid=IN%3Aen"
+        rss_url = f"https://news.google.com/rss/search?q={encoded_company}%20when%3A6h&hl=en-IN&gl=IN&ceid=IN%3Aen"
         logger.info(f"Fetching news for {company_name} ({symbol}) from {rss_url}")
 
         # Parse RSS feed
