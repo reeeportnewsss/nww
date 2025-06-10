@@ -76,7 +76,7 @@ def save_all_news(companies, output_file):
                         f.write(f"{j}. {title}\n")
                     f.write("\n")  # Add blank line between companies
                 else:
-                    f.write(f"Stock: {company['name']}\nNo news found.\n\n")
+                   # f.write(f"Stock: {company['name']}\nNo news found.\n\n")
 
                 # Wait for 10 seconds before fetching news for the next company (except for the last one)
                 if i < len(companies) - 1:
