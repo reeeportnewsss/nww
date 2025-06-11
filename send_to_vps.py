@@ -78,7 +78,7 @@ def send_to_telegram(message, chat_id=TELEGRAM_CHAT_ID, bot_token=TELEGRAM_BOT_T
         data = {
             'chat_id': chat_id,
             'text': message,
-            'parse_mode': 'Markdown'  # Enable markdown formatting
+           # Enable markdown formatting
         }
         
         # Send POST request
