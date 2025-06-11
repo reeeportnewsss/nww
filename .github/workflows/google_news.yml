@@ -20,7 +20,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install requests google-generativeai bs4 lxml
+        pip install requests google-generativeai bs4 lxml pytz
         pip install -q -U "google-genai>=1.0.0"
         pip install bs4
         pip install feedparser
