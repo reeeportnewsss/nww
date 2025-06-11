@@ -42,4 +42,5 @@ jobs:
         VPS_DEST_DIR: ${{ secrets.VPS_DEST_DIR }}
         VPS_PORT: ${{ secrets.VPS_PORT }}
       run: python send_to_vps.py
+      run: rsi_oversold.py
      
