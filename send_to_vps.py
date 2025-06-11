@@ -12,7 +12,7 @@ OUTPUT_DIR = os.getenv('OUTPUT_DIR', '/tmp')  # Local temp directory in GitHub A
 
 # === Telegram Bot Config ===
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "1486785506")  # Channel ID or user ID
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")  # Channel ID or user ID
 
 # Ensure the local output directory exists
 if not os.path.exists(OUTPUT_DIR):
