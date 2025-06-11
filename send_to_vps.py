@@ -32,7 +32,7 @@ if not GEMINI_API_KEY:
 if not TELEGRAM_BOT_TOKEN:
     print("WARNING: TELEGRAM_BOT_TOKEN not found in environment variables!")
     # Temporary fallback - REMOVE IN PRODUCTION
-    TELEGRAM_BOT_TOKEN = "8029136431:AAElPK-4-KO5MqbAhz3pyqyDXGpFV7d8xkI"
+    
     print("Using hardcoded TELEGRAM_BOT_TOKEN for testing")
 if not TELEGRAM_CHAT_ID:
     print("WARNING: TELEGRAM_CHAT_ID not found in environment variables!")
