@@ -7,7 +7,12 @@ from google import genai
 from google.genai.types import GenerateContentConfig
 
 # === API Configuration ===
-API_KEYS = os.getenv("GEMINI_API_KEY")
+API_KEYS = [
+    os.getenv('gemini_api_key1'),
+    os.getenv('gemini_api_key2'),
+    os.getenv('gemini_api_key3'),
+    os.getenv('gemini_api_key4'),
+]
 
 api_key_cycle = cycle(API_KEYS)
 current_api_key = next(api_key_cycle)
