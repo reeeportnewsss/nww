@@ -2,7 +2,7 @@ import os
 import logging
 
 # ==== CONFIGURATION ====
-INPUT_NEWS_FILE = "all_stock_news.txt"  # Input file with stock news
+INPUT_NEWS_FILE = "combined_response.txt"  # Input file with stock news
 OUTPUT_NEWS_FILE = "processed_stock_news.txt"  # Output file with instruction added
 
 # Set up logging
