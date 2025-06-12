@@ -44,8 +44,6 @@ jobs:
         VPS_PASS: ${{ secrets.VPS_PASS }}
         VPS_DEST_DIR: ${{ secrets.VPS_DEST_DIR }}
         VPS_PORT: ${{ secrets.VPS_PORT }}
-
-    - name: Run Groww Digest Anysis Script
       run: python title_filter.py
       
     - name: Run Groww DigesAnalysis Script
