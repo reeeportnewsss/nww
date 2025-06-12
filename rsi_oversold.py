@@ -7,7 +7,7 @@ from datetime import datetime
 import pytz
 
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-CHAT_ID = "1486785506"
+CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 HEADERS = {
     "Host": "www.screener.in",
