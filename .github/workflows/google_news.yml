@@ -32,11 +32,11 @@ jobs:
 
     - name: Run Groww Digest Analysis Script
       env:
-        gemini_api_key1: ${{ secrets.gemini_api_key1 }}
+        gemini_api_key1: ${{ secrets.GEMINI_API_KEY1 }}
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        gemini_api_key2: ${{ secrets.gemini_api_key2 }}
-        gemini_api_key3: ${{ secrets.gemini_api_key3 }}
-        gemini_api_key4: ${{ secrets.gemini_api_key4 }}
+        gemini_api_key2: ${{ secrets.GEMINI_API_KEY2 }}
+        gemini_api_key3: ${{ secrets.GEMINI_API_KEY3 }}
+        gemini_api_key4: ${{ secrets.GEMINI_API_KEY4 }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         VPS_HOST: ${{ secrets.VPS_HOST }}
