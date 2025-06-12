@@ -89,7 +89,7 @@ def save_all_news(companies, output_file):
 
 def main():
     csv_file = "n0.csv"
-    output_file = "all_stock_news.txt"
+    output_file = "title.txt"
     companies = read_nifty50_companies(csv_file)
 
     if not companies:
