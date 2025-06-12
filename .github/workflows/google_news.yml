@@ -28,12 +28,15 @@ jobs:
 
     - name: Run Groww Digest Analysis Script
       run: python fetch_keyword_stock_news.py
-    - name: Run Groww Digest Analysis Script
-      run: python text_process.py
+
 
     - name: Run Groww Digest Analysis Script
       env:
+        gemini_api_key1: ${{ secrets.gemini_api_key1 }}
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        gemini_api_key2: ${{ secrets.gemini_api_key2 }}
+        gemini_api_key3: ${{ secrets.gemini_api_key3 }}
+        gemini_api_key4: ${{ secrets.gemini_api_key4 }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         VPS_HOST: ${{ secrets.VPS_HOST }}
@@ -41,6 +44,17 @@ jobs:
         VPS_PASS: ${{ secrets.VPS_PASS }}
         VPS_DEST_DIR: ${{ secrets.VPS_DEST_DIR }}
         VPS_PORT: ${{ secrets.VPS_PORT }}
+
+    - name: Run Groww Digest Analysis Script
+      run: python title_filter.py
+      
+    - name: Run Groww Digest Analysis Script
+      run: python gemini_response.py  
+      
+    - name: Run Groww Digest Analysis Script
+      run: python text_process.py  
+      
+    - name: Run Groww Digest Analysis Script
       run: python send_to_vps.py
     - name: rsi oversold
       run: python rsi_oversold.py
