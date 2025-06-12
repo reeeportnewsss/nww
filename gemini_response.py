@@ -72,14 +72,13 @@ for title in titles:
             success = True
         except Exception as e:
             if "401" in str(e):
-                print(f"401 error for title '{title}' with API key}. Retrying...")
                 retry_count += 1
                 current_api_key = next(api_key_cycle)
                 os.environ['GOOGLE_API_KEY'] = current_api_key
                 client = genai.Client()
                 time.sleep(2 ** retry_count)
             else:
-                print(f"Error processing title '{title}': {str(e)}")
+                print(f"Error processing title '{title}': ")
                 break
     
     if success:
