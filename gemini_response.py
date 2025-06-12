@@ -1,27 +1,15 @@
 import os
-import re
-import time
 import json
 from google import genai
 from datetime import datetime
-from itertools import cycle
 
 # === Configuration ===
-# Load API keys from GitHub environment variables
-API_KEYS = [
-    os.getenv('GEMINI_API_KEY1'),
-    os.getenv('GEMINI_API_KEY2'),
-    os.getenv('GEMINI_API_KEY3'),
-    os.getenv('GEMINI_API_KEY4'),
-]
-# Filter out None values in case some keys are not set
-API_KEYS = [key for key in API_KEYS if key]
-if not API_KEYS:
-    raise ValueError("No valid API keys found in environment variables")
+# Load single API key from environment variable
+API_KEY = os.getenv('GEMINI_API_KEY1')
+if not API_KEY:
+    raise ValueError("No valid API key found in environment variable 'GEMINI_API_KEY'")
 
-api_key_cycle = cycle(API_KEYS)
-current_api_key = next(api_key_cycle)
-os.environ['GOOGLE_API_KEY'] = current_api_key
+os.environ['GOOGLE_API_KEY'] = API_KEY
 client = genai.Client()
 MODEL_ID = "gemini-2.0-flash"
 input_file = "valid_title.txt"
@@ -50,45 +38,27 @@ for title in titles:
         print(f"Skipping already processed title: '{title}'")
         continue
     
-    max_retries = len(API_KEYS) * 2
-    retry_count = 0
-    success = False
-    response_text = ""
-    
-    while retry_count < max_retries and not success:
-        try:
-            prompt = (
-                f"Summarize the news article in detail by searching given title on web "
-                f"and by reading some recent article based on website,,, title:- {title}"
-            )
-            response = client.models.generate_content(
-                model=MODEL_ID,
-                contents=prompt,
-                config={"tools": [{"google_search": {}}]},
-            )
-            response_text = response.text
-            print(f"Processed title '{title}'")
-            processed_titles.add(title)
-            success = True
-        except Exception as e:
-            if "401" in str(e):
-                retry_count += 1
-                current_api_key = next(api_key_cycle)
-                os.environ['GOOGLE_API_KEY'] = current_api_key
-                client = genai.Client()
-                time.sleep(2 ** retry_count)
-            else:
-                print(f"Error processing title '{title}': ")
-                break
-    
-    if success:
-        print(f"Failed to process title '{title}' after {max_retries} attempts.")
-    else:
+    try:
+        prompt = (
+            f"Summarize the news article in detail by searching given title on web "
+            f"and by reading some recent article based on website,,, title:- {title}"
+        )
+        response = client.models.generate_content(
+            model=MODEL_ID,
+            contents=prompt,
+            config={"tools": [{"google_search": {}}]},
+        )
+        response_text = response.text
+        print(f"Processed title '{title}'")
+        processed_titles.add(title)
         # Store individual response
         combined_response.append({
             "title": title,
             "summary": response_text
         })
+    except Exception as e:
+        print(f"Error processing title '{title}': {e}")
+        continue
 
 # === Generate combined output with summary ===
 with open(output_file, "w", encoding="utf-8") as f:
