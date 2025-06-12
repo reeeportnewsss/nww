@@ -5,7 +5,7 @@ from datetime import datetime
 
 # === Configuration ===
 # Load single API key from environment variable
-API_KEY = os.getenv('GEMINI_API_KEY1')
+API_KEY = os.getenv('GEMINI_API_KEY')
 if not API_KEY:
     raise ValueError("No valid API key found in environment variable 'GEMINI_API_KEY'")
 
