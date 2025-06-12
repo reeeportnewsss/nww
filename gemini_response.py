@@ -9,10 +9,10 @@ from itertools import cycle
 # === Configuration ===
 # Load API keys from GitHub environment variables
 API_KEYS = [
-    os.getenv('gemini_api_key1'),
-    os.getenv('gemini_api_key2'),
-    os.getenv('gemini_api_key3'),
-    os.getenv('gemini_api_key4'),
+    os.getenv('GEMINI_API_KEY1'),
+    os.getenv('GEMINI_API_KEY2'),
+    os.getenv('GEMINI_API_KEY3'),
+    os.getenv('GEMINI_API_KEY4'),
 ]
 # Filter out None values in case some keys are not set
 API_KEYS = [key for key in API_KEYS if key]
