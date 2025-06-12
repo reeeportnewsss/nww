@@ -1,22 +1,14 @@
 import os
-import re
-import time
 import json
-from itertools import cycle
 from google import genai
 from google.genai.types import GenerateContentConfig
 
 # === API Configuration ===
-API_KEYS = [
-    os.getenv('gemini_api_key1'),
-    os.getenv('gemini_api_key2'),
-    os.getenv('gemini_api_key3'),
-    os.getenv('gemini_api_key4'),
-]
+API_KEY = os.getenv('GEMINI_API_KEY2')
+if not API_KEY:
+    raise ValueError("No valid API key found in environment variable 'GEMINI_API_KEY'")
 
-api_key_cycle = cycle(API_KEYS)
-current_api_key = next(api_key_cycle)
-os.environ['GOOGLE_API_KEY'] = current_api_key
+os.environ['GOOGLE_API_KEY'] = API_KEY
 client = genai.Client()
 MODEL_ID = "gemini-2.5-flash-preview-05-20"
 
@@ -78,46 +70,27 @@ try:
     full_prompt = filtering_prompt + titles_content
 
     # === Process with Gemini API ===
-    max_retries = len(API_KEYS) * 2
-    retry_count = 0
-    success = False
-
-    while retry_count < max_retries and not success:
-        try:
-            time.sleep(5)
-            response = client.models.generate_content(
-                model=MODEL_ID,
-                contents=full_prompt,
-                config=GenerateContentConfig(
-                    thinking_config=genai.types.ThinkingConfig(
-                        include_thoughts=True,
-                        thinking_budget=3500
-                    ),
-                    response_modalities=["TEXT"]
-                )
+    try:
+        response = client.models.generate_content(
+            model=MODEL_ID,
+            contents=full_prompt,
+            config=GenerateContentConfig(
+                thinking_config=genai.types.ThinkingConfig(
+                    include_thoughts=True,
+                    thinking_budget=3500
+                ),
+                response_modalities=["TEXT"]
             )
+        )
 
-            # Save filtered titles
-            with open(output_file, "w", encoding="utf-8") as out_f:
-                out_f.write(response.text)
+        # Save filtered titles
+        with open(output_file, "w", encoding="utf-8") as out_f:
+            out_f.write(response.text)
 
-            print(f"✅ Title filtering completed. Filtered titles saved to: {output_file}")
-            success = True
+        print(f"✅ Title filtering completed. Filtered titles saved to: {output_file}")
 
-        except Exception as e:
-            if "501" in str(e):
-                print(f"⚠️  501 error with API key {current_api_key}. Switching key...")
-                retry_count += 1
-                current_api_key = next(api_key_cycle)
-                os.environ['GOOGLE_API_KEY'] = current_api_key
-                client = genai.Client()
-                time.sleep(2 ** min(retry_count, 5))  # backoff
-            else:
-                print(f"❌ Error processing titles: {e}")
-                break
-
-    if not success:
-        print("❌ Failed to process titles after all retries")
+    except Exception as e:
+        print(f"❌ Error processing titles: {e}")
 
 except FileNotFoundError:
     print(f"❌ Error: {title_file} not found")
